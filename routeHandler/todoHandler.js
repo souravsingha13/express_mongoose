@@ -33,6 +33,7 @@ router.post('/', (req, res) => {
         .catch(err => res.status(500).json({ error: 'Failed to create todo', details: err }));
 });
 
+// Create bulk todos
 router.post('/bulk', (req, res) => {
     Todo.insertMany(req.body)
         .then(() => res.json({ message: 'Bulk todos created successfully' }))
