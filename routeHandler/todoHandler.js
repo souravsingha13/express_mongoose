@@ -7,13 +7,22 @@ const Todo = new mongoose.model('Todo', todoSchema);
 
 // Get all todos
 router.get('/', (req, res) => {
-    console.log('Get all todos');
-    res.json({ message: 'Get all todos' });
+    Todo.find()
+        .select('title description status date')
+        .then(todos => res.json(todos))
+        .catch(err => res.status(500).json({ error: 'Failed to fetch todos', details: err }));
 });
 
 // Get a new todo
 router.get('/:id', (req, res) => {
-    res.json({ message: 'Get a new todo' });
+    Todo.findById(req.params.id)
+        .select('title description status date')
+        .then(todo => {
+            if (!todo) {
+                return res.status(404).json({ error: 'Todo not found' });
+            }
+            res.json(todo);
+        })
 });
 
 // Create a new todo
@@ -32,12 +41,26 @@ router.post('/bulk', (req, res) => {
 
 // Update a todo
 router.put('/:id', (req, res) => {
-    res.json({ message: 'Update a todo' });
+    Todo.findByIdAndUpdate(req.params.id, req.body, { new: true })
+        .then(todo => {
+            if (!todo) {
+                return res.status(404).json({ error: 'Todo not found' });
+            }
+            res.json({ message: 'Todo updated successfully', todo });
+        })
+        .catch(err => res.status(500).json({ error: 'Failed to update todo', details: err }));
 });
 
 // Delete a todo
 router.delete('/:id', (req, res) => {
-    res.json({ message: 'Delete a todo' });
+    Todo.findByIdAndDelete(req.params.id)
+        .then(todo => {
+            if (!todo) {
+                return res.status(404).json({ error: 'Todo not found' });
+            }
+            res.json({ message: 'Todo deleted successfully' });
+        })
+        .catch(err => res.status(500).json({ error: 'Failed to delete todo', details: err }));
 });
 
 module.exports = router;
