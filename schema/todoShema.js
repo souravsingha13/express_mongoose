@@ -23,4 +23,10 @@ todoSchema.methods = {
     }
 }
 
+todoSchema.statics = {
+    findByNode: function (status) {
+        return this.find({ title: /node/i });
+    }
+}
+
 module.exports = todoSchema;

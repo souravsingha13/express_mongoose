@@ -21,6 +21,11 @@ router.get('/active', (req, res) => {
         .catch(err => res.status(500).json({ error: 'Failed to fetch active todos', details: err }));
 });
 
+router.get('/node', (req, res) => {
+    Todo.findByNode('node')
+        .then(todos => res.json(todos))
+        .catch(err => res.status(500).json({ error: 'Failed to fetch todos by status', details: err }));
+});
 // Get a new todo
 router.get('/:id', (req, res) => {
     Todo.findById(req.params.id)
