@@ -24,8 +24,14 @@ todoSchema.methods = {
 }
 
 todoSchema.statics = {
-    findByNode: function (status) {
+    findByNode: function () {
         return this.find({ title: /node/i });
+    }
+}
+
+todoSchema.query = {
+    byLanguage: function (language) {
+        return this.find({ title: new RegExp(language, 'i') });
     }
 }
 
