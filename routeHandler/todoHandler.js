@@ -1,12 +1,13 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const todoSchema = require('../schema/todoShema');
+const checkLogin = require('../middleware/checkLogin');
 const router = express.Router();
 
 const Todo = new mongoose.model('Todo', todoSchema);
 
 // Get all todos
-router.get('/', (req, res) => {
+router.get('/', checkLogin, (req, res) => {
     Todo.find()
         .select('title description status date')
         .then(todos => res.json(todos))

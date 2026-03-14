@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const todoHandler = require('./routeHandler/todoHandler');
+const userHandler = require('./routeHandler/userHandler');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -15,6 +16,7 @@ mongoose.connect('mongodb://localhost:27017/todo').then(() => console.log('Mongo
 
 // Routes
 app.use('/todo', todoHandler);
+app.use('/user', userHandler);
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);
