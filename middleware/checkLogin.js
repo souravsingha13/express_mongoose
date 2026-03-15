@@ -7,7 +7,8 @@ const checkLogin = (req, res, next) => {
         }
         const token = authHeader.split(' ')[1];
         const decoded = jwt.verify(token, 'your-secret-key');
-        req.user = decoded;
+        console.log(decoded);
+        req.userId = decoded.userId;
         next();
     } catch (err) {
         console.log(err);

@@ -61,6 +61,20 @@ router.post('/login', async (req, res) => {
         });
     }
 });
+// GET ALL USERS
+router.get('/all', async (req, res) => {
+    try {
+        const users = await User.find()
+            .populate('todos', 'title description status date')
+            .select('name email status todos');
+        res.json(users);
+    }
+    catch (err) {
+        res.status(500).json({
+            error: "Failed to fetch users"
+        });
+    }
+});
 
 // Update a user
 router.put('/:id', async (req, res) => {

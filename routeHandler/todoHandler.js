@@ -1,15 +1,18 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const todoSchema = require('../schema/todoShema');
+const userSchema = require('../schema/userSchema');
 const checkLogin = require('../middleware/checkLogin');
 const router = express.Router();
 
 const Todo = new mongoose.model('Todo', todoSchema);
+const User = new mongoose.model('User', userSchema);
 
 // Get all todos
 router.get('/', checkLogin, (req, res) => {
     Todo.find()
-        .select('title description status date')
+        .populate('user', 'name email')
+        .select('title description status date user')
         .then(todos => res.json(todos))
         .catch(err => res.status(500).json({ error: 'Failed to fetch todos', details: err }));
 });
@@ -48,11 +51,24 @@ router.get('/:id', (req, res) => {
 });
 
 // Create a new todo
-router.post('/', (req, res) => {
-    const newTodo = Todo(req.body);
-    newTodo.save()
-        .then(() => res.json({ message: 'Todo created successfully' }))
-        .catch(err => res.status(500).json({ error: 'Failed to create todo', details: err }));
+router.post('/', checkLogin, async (req, res) => {
+    try {
+        const { title, description, status, userId } = req.body;
+
+        const newTodo = new Todo({
+            title,
+            description,
+            status,
+            user: req.userId
+        });
+        const todo = await newTodo.save();
+        // Update the user's todos array
+        await User.findByIdAndUpdate(req.userId, { $push: { todos: todo._id } });
+        res.json({ message: 'Todo created successfully', todo });
+    }
+    catch (err) {
+        res.status(500).json({ error: 'Failed to create todo', details: err });
+    }
 });
 
 // Create bulk todos
